@@ -1,6 +1,5 @@
 html {
   scroll-behavior: smooth;
-  box-sizing: border-box;
 }
 
 *:before,
@@ -12,62 +11,18 @@ body {
   background-color: #f2f5ea;
   padding-top: 5rem;
   padding-bottom: 5rem;
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  justify-content: center;
+  align-items: center;
 }
 
 .electrolize-regular {
   font-family: "Electrolize", serif;
   font-weight: 400;
   font-style: normal;
-}
-
-.montserrat-light {
-  font-family: "Montserrat", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.featurette-divider {
-  margin: 10rem 0; /* Space out the Bootstrap <hr> more */
-}
-
-.featurette-mini-divider {
-  margin: 5rem 0; /* Space out the Bootstrap <hr> more */
-}
-
-/* Thin out the marketing headings */
-/* rtl:begin:remove */
-.featurette-heading {
-  letter-spacing: -0.05rem;
-}
-
-a.text-decoration-none {
-  display: block;
-}
-
-@media (min-width: 40em) {
-  /* Bump up size of carousel content */
-  .featurette-heading {
-    font-size: 50px;
-  }
-}
-
-@media (min-width: 62em) {
-  .featurette-heading {
-    margin-top: 7rem;
-    margin-left: 5rem;
-  }
-}
-
-.artist-featurette {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#artist-featurette-index {
-  margin-top: 2rem;
-  margin-left: 5rem;
 }
 
 button {
@@ -78,119 +33,4 @@ button {
 button:hover {
   background-color: #f9b4ed;
   color: #1e2d24;
-}
-
-#testButton {
-  background-color: antiquewhite;
-  font-family: "Electrolize", serif;
-}
-
-#mainMenu {
-  font-family: "Electrolize", serif;
-}
-
-#loginMenu {
-  font-family: "Montserrat", serif;
-}
-
-#login button {
-  background-color: #f9b4ed;
-  color: #1e2d24;
-}
-#login button:hover {
-  background-color: #1e2d24;
-  color: #f9b4ed;
-}
-
-#homeHeroButtons {
-  font-family: "Electrolize", serif;
-}
-
-.card-cover {
-  position: relative;
-  transition: transform 0.3s ease-in-out;
-  color: F7FFF6;
-}
-
-.card-cover:hover {
-  transform: scale(1.05);
-  cursor: pointer;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.card-cover:hover .overlay {
-  opacity: 1;
-}
-
-.description {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.card-cover:hover .title {
-  display: none;
-}
-
-.card-cover:hover .description {
-  display: block;
-  opacity: 1;
-  color: F7FFF6;
-}
-
-#contactForm {
-  display: inline-block;
-  padding: 1em;
-  border: 1px solid #ccc;
-  border-radius: 1em;
-  text-align: center !important;
-
-  /* Centering on the page */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#contactForm input,
-#contactForm textarea,
-#contactForm button {
-  all: revert;
-  font-family: inherit;
-  border-radius: 1em;
-}
-
-#contactForm input,
-#contactForm textarea {
-  font-family: "Electrolize", serif;
-  width: 300px;
-  box-sizing: border-box;
-  border: 1px solid #999;
-}
-
-#contactForm textarea {
-  vertical-align: top;
-  min-height: 5em;
-  resize: vertical;
-}
-
-#contactForm button {
-  background-color: #353a47;
-  color: #eedae2;
-  margin-left: 0.5em;
-}
-
-#contactForm button:hover {
-  background-color: #eedae2;
-  color: #353a47;
 }
