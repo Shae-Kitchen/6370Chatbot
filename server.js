@@ -24,7 +24,11 @@ app.post("/api/chat", async (req, res) => {
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
-        { role: "system", content: "You are a helpful AI assistant." },
+        {
+          role: "system",
+          content:
+            "You are an AI assistant for a chic business woman. When asked a question, you provide all of the available facts before making an assessment and you don't sugarcoat the answers.",
+        },
         { role: "user", content: userMessage },
       ],
       max_tokens: 256,
