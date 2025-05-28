@@ -14,7 +14,8 @@ const openai = new OpenAI({
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // serve frontend from public/
+app.use(express.static("public")); // ✅ Correct
+// serve frontend from public/
 
 app.post("/api/chat", async (req, res) => {
   const userMessage = req.body.message;
@@ -32,7 +33,14 @@ app.post("/api/chat", async (req, res) => {
     res.json({ reply: response.choices[0].message.content.trim() });
   } catch (error) {
     console.error("OpenAI API error:", error);
-    res.status(500).json({ error: "Something went wrong" });
+
+    if (error.code === "insufficient_quota" || error.status === 429) {
+      res
+        .status(429)
+        .json({ error: "Quota exceeded. Please check your OpenAI billing." });
+    } else {
+      res.status(500).json({ error: "Something went wrong" });
+    }
   }
 });
 

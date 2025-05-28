@@ -26,8 +26,16 @@ async function sendChat() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: chatQuery }),
     });
+
+    // Try to parse JSON response
     const data = await response.json();
-    appendMessage("bot", data.reply);
+
+    // Check if server returned an error message
+    if (data.error) {
+      appendMessage("bot", `⚠️ Error: ${data.error}`);
+    } else {
+      appendMessage("bot", data.reply);
+    }
   } catch (error) {
     console.error("Chat error:", error);
     appendMessage("bot", "⚠️ Failed to get a response.");
