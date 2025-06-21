@@ -1,52 +1,85 @@
+// Wait until the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("#chat-box"); // Or wrap in a <form>
+  const form = document.getElementById("chat-form");
   form.addEventListener("submit", handleSubmit);
-
-  const button = document.getElementById("chat-submit");
-  button.addEventListener("click", handleSubmit);
 });
 
+// Handle form submission
 async function handleSubmit(e) {
-  e.preventDefault(); // Stop page reload
+  e.preventDefault();
   await sendChat();
 }
 
+// Send the user message to the backend and get the AI response
 async function sendChat() {
   const chatInput = document.getElementById("chatbox-input");
   const chatQuery = chatInput.value.trim();
-
-  if (!chatQuery) return; // Ignore empty messages
+  if (!chatQuery) return;
 
   appendMessage("user", chatQuery);
-  chatInput.value = ""; // Clear input early
+  chatInput.value = "";
+
+  // Show "Thinking..." typing indicator
+  const loadingDiv = document.createElement("div");
+  loadingDiv.className = "message bot typing-indicator";
+  loadingDiv.textContent = "Thinking...";
+  document.getElementById("chat-messages").appendChild(loadingDiv);
 
   try {
-    const response = await fetch("/api/chat", {
+    // 🔥 MAKE SURE YOUR SERVER IS RUNNING ON THIS PORT
+    const response = await fetch("http://localhost:3000/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ message: chatQuery }),
     });
 
-    // Try to parse JSON response
     const data = await response.json();
+    removeTypingIndicator();
 
-    // Check if server returned an error message
     if (data.error) {
       appendMessage("bot", `⚠️ Error: ${data.error}`);
     } else {
-      appendMessage("bot", data.reply);
+      simulateTyping(data.reply);
     }
   } catch (error) {
-    console.error("Chat error:", error);
-    appendMessage("bot", "⚠️ Failed to get a response.");
+    removeTypingIndicator();
+    appendMessage("bot", "⚠️ Failed to connect to the server.");
   }
 }
 
+// Append message to chat box
 function appendMessage(sender, message) {
   const chatBox = document.getElementById("chat-messages");
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${sender}`;
   messageDiv.textContent = message;
   chatBox.appendChild(messageDiv);
-  chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Simulate typing animation for bot reply
+function simulateTyping(reply) {
+  const chatBox = document.getElementById("chat-messages");
+  const typingDiv = document.createElement("div");
+  typingDiv.className = "message bot";
+  chatBox.appendChild(typingDiv);
+
+  let i = 0;
+  const typingEffect = setInterval(() => {
+    if (i < reply.length) {
+      typingDiv.textContent = reply.substring(0, i + 1);
+      i++;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    } else {
+      clearInterval(typingEffect);
+    }
+  }, 20);
+}
+
+// Remove any "Thinking..." indicators
+function removeTypingIndicator() {
+  const indicators = document.querySelectorAll(".typing-indicator");
+  indicators.forEach((el) => el.remove());
 }
