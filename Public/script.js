@@ -27,7 +27,7 @@ async function sendChat() {
 
   try {
     // 🔥 MAKE SURE YOUR SERVER IS RUNNING ON THIS PORT
-    const response = await fetch("http://localhost:3000/api/chat", {
+    const response = await fetch("http://localhost:5500/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

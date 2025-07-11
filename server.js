@@ -8,14 +8,22 @@ import { OpenAI } from "openai";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 5500;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+
 app.use(cors()); // Allow frontend to talk to backend
 app.use(express.json()); // Parse JSON request bodies
+
+// Serve static files from the "Public" folder
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(express.static(path.join(__dirname, "Public")));
 
 // Chat route
 app.post("/api/chat", async (req, res) => {
@@ -32,7 +40,7 @@ app.post("/api/chat", async (req, res) => {
         {
           role: "system",
           content:
-            "You are an AI assistant for a chic but ADHD entrepreneur. Provide all facts before assessments, and don't sugarcoat answers.",
+            "You are an AI assistant for a chic but ADHD entrepreneur. Provide all facts before making any additional assessments, and don't sugarcoat answers Feel free to make suggestions and jokes where the opportunity presents itself",
         },
         { role: "user", content: userMessage },
       ],
