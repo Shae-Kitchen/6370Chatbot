@@ -1,9 +1,10 @@
 html {
   scroll-behavior: smooth;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #f2f5ea;
+  background-color: #f7f7fa;
   padding-top: 5rem;
   padding-bottom: 5rem;
   font-family: "Montserrat", serif;
@@ -12,6 +13,17 @@ body {
   font-style: normal;
   justify-content: center;
   align-items: center;
+}
+
+h1 {
+  display: inline-block;
+  font-family: "Electrolize", serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #14011e;
+  font-size: 2.5rem;
+  margin: 0;
+  padding: 0;
 }
 
 .electrolize-regular {
@@ -23,9 +35,97 @@ body {
 button {
   background-color: #1e2d24;
   color: #f9b4ed;
+  display: inline-block;
 }
 
 button:hover {
-  background-color: #f9b4ed;
+  background-color: #e0efda;
   color: #1e2d24;
 }
+
+.spacer-vertical-small {
+  height: 10px; /* Small vertical space */
+}
+
+.spacer-vertical-medium {
+  height: 30px; /* Medium vertical space */
+}
+
+.center {
+  text-align: center;
+}
+
+#chat-messages {
+  min-height: 100px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.message.bot {
+  background: #e0e7ff;
+  color: #1e2d24;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 6px 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.message.user {
+  background: #f9b4ed;
+  color: #1e2d24;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 6px 0;
+  text-align: right;
+  display: inline-block;
+}
+
+#chatbox-input {
+  width: 80%; /* Adjust width as needed */
+  max-width: 100%; /* Optional: limit max width */
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.5px solid #1e2d24;
+  border-radius: 8px;
+  background: #f7f7fa;
+  color: #1e2d24;
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#chatbox-input:focus {
+  border-color: #14011e;
+  background: #f7f7fa;
+}
+
+.input-box {
+  width: 80%; /* Adjust width as needed */
+  max-width: 100%; /* Optional: limit max width */
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.5px solid #1e2d24;
+  border-radius: 8px;
+  background: #f7f7fa;
+  color: #1e2d24;
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+/*Color Palette: Pink and Green*/
+/* Primary Colors */
+/* 
+#E0EFDA - honeydew
+#EFC7E5 - lightest pink
+#F9B4ED - light pink
+#1E2D24 - dark green
+#14011E - dark purple
+#F7F7FA - off-white
+#EEB1D5
+#E18AD4
+#D782BA
+*/

@@ -14,7 +14,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-
 app.use(cors()); // Allow frontend to talk to backend
 app.use(express.json()); // Parse JSON request bodies
 
