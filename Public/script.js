@@ -12,6 +12,13 @@ async function handleSubmit(e) {
 
 // Send the user message to the backend and get the AI response
 async function sendChat() {
+  const goalSelect = document.getElementById("conversation-goal");
+  const conversationGoal = goalSelect ? goalSelect.value : "companionship";
+  const userName = document.getElementById("user-name").value.trim();
+  if (!userName) {
+    appendMessage("bot", "⚠️ Please enter your name before chatting.");
+    return;
+  }
   const chatInput = document.getElementById("chatbox-input");
   const chatQuery = chatInput.value.trim();
   if (!chatQuery) return;
@@ -32,7 +39,11 @@ async function sendChat() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message: chatQuery }),
+      body: JSON.stringify({
+        message: chatQuery,
+        userName: userName,
+        conversationGoal: conversationGoal,
+      }),
     });
 
     const data = await response.json();

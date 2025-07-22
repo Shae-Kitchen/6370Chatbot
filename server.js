@@ -26,21 +26,37 @@ app.use(express.static(path.join(__dirname, "Public")));
 
 // Chat route
 app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
+  // Destructure personalization data from request body
+  const {
+    message: userMessage,
+    userName = "friend",
+    conversationGoal = "companionship",
+  } = req.body;
 
   if (!userMessage || typeof userMessage !== "string") {
     return res.status(400).json({ error: "Invalid message format" });
   }
 
+  // Helper function to generate system prompt based on goal
+  function getSystemPrompt(userName, conversationGoal) {
+    switch (conversationGoal) {
+      case "tutoring":
+        return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
+      case "coaching":
+        return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
+      case "companionship":
+      default:
+        return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
+    }
+  }
+
+  const systemPrompt = getSystemPrompt(userName, conversationGoal);
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
-        {
-          role: "system",
-          content:
-            "You are an AI assistant for a chic but ADHD entrepreneur. Provide all facts before making any additional assessments, and don't sugarcoat answers Feel free to make suggestions and jokes where the opportunity presents itself",
-        },
+        { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
       ],
       max_tokens: 256,
@@ -58,3 +74,15 @@ app.post("/api/chat", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
+function getSystemPrompt(userName, conversationGoal) {
+  switch (conversationGoal) {
+    case "tutoring":
+      return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
+    case "coaching":
+      return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
+    case "companionship":
+    default:
+      return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
+  }
+}
