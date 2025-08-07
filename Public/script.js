@@ -53,6 +53,7 @@ async function sendChat() {
       appendMessage("bot", `⚠️ Error: ${data.error}`);
     } else {
       simulateTyping(data.reply);
+      speak(data.reply);
     }
   } catch (error) {
     removeTypingIndicator();
