@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { OpenAI } from "openai";
+import axios from "axios";
+import fs from "fs";
+import { v4 as uuidv4 } from "uuid";
 
 // Load .env variables
 dotenv.config();
@@ -68,6 +71,56 @@ app.post("/api/chat", async (req, res) => {
     const status = error.status || 500;
     const message = error.message || "Something went wrong";
     res.status(status).json({ error: message });
+  }
+});
+
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+const VOICE_ID = process.env.ELEVENLABS_VOICE_ID;
+
+app.use("/audio", express.static(path.join(__dirname, "audio")));
+
+app.post("/api/tts", async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) return res.status(400).json({ error: "Text is required" });
+
+  const filename = `${uuidv4()}.mp3`;
+  const filepath = path.join(__dirname, "audio", filename);
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+      headers: {
+        "xi-api-key": ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
+      },
+      responseType: "stream",
+      data: {
+        text: text,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+        },
+      },
+    });
+
+    const writer = fs.createWriteStream(filepath);
+    response.data.pipe(writer);
+
+    writer.on("finish", () => {
+      res.json({ audioUrl: `/audio/${filename}` });
+    });
+
+    writer.on("error", (err) => {
+      console.error("Audio write error:", err);
+      res.status(500).json({ error: "Failed to write audio file" });
+    });
+  } catch (err) {
+    console.error("ElevenLabs Error:", err.message);
+    res.status(500).json({ error: "Failed to generate speech" });
   }
 });
 

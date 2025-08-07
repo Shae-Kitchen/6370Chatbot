@@ -94,3 +94,22 @@ function removeTypingIndicator() {
   const indicators = document.querySelectorAll(".typing-indicator");
   indicators.forEach((el) => el.remove());
 }
+
+async function speak(text) {
+  const res = await fetch("/api/tts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await res.json();
+  if (data.audioUrl) {
+    const audio = new Audio(data.audioUrl);
+    audio.play();
+  } else {
+    console.error("TTS error:", data.error);
+  }
+}
+
