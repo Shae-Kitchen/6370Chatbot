@@ -1,3 +1,6 @@
+
+//***AI CHATBOT INTEGRATION***
+
 // Wait until the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("chat-form");
@@ -113,3 +116,6 @@ async function speak(text) {
     console.error("TTS error:", data.error);
   }
 }
+
+//** DECODER PROGRAM*/
+

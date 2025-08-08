@@ -8,60 +8,73 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <main>
+    //NAV BAR
+    <header>
       <div class="center">
-        <h1>Turning Overload Into Artistry</h1>
-        <h2>What are we working on today?</h2>
+        <h2>Turning Overload Into Artistry</h2>
+        <h3>What are we working on today?</h3>
       </div>
 
       <div class="spacer-vertical-small"></div>
 
-      <select id="conversation-goal">
-        <option value="tutoring">Tutor</option>
-        <option value="coaching">Coach</option>
-        <option value="companionship">Friend</option>
-      </select>
+      <div id="tool-nav" class="center">
+        <button data-tool="chat">Chatbot</button>
+        <button data-tool="decoder">Decoder</button>
+        <button data-tool="planner">Planner</button>
+        <button data-tool="checklist">Checklist</button>
+      </div>
+    </header>
 
+    <main>
       <div class="spacer-vertical-medium"></div>
 
-      <div id="chat-box" class="center">
-        <input
-          id="user-name"
-          class="input-box"
-          type="text"
-          placeholder="Enter your name"
-        />
-      </div>
-
-      <div class="spacer-vertical-small"></div>
-
-      <div id="chat-box" class="center">
+      <!-- Chatbot Tool Panel -->
+      <div id="tool-chat" class="tool-panel">
+        <h2>Chatbot</h2>
+        <!-- Place your chatbot UI elements here -->
         <form id="chat-form">
-          <input
-            type="text"
-            id="chatbox-input"
-            placeholder="Tell me what you are thinking..."
-            required
-          />
-          <div class="spacer-vertical-medium"></div>
-
-          <button type="submit" id="chat-submit">Click Me</button>
+          <div id="chat-box" class="center">
+            <input
+              id="user-name"
+              class="input-box"
+              type="text"
+              placeholder="Enter your name"
+            />
+          </div>
+          <button type="submit">Send</button>
         </form>
+        <div id="chat-messages"></div>
       </div>
 
-      <div class="spacer-vertical-medium"></div>
+      <!-- Decoder Tool Panel -->
+      <div id="tool-decoder" class="tool-panel" style="display: none">
+        <h2>Decoder</h2>
+        <!-- Place your decoder UI elements here -->
+        <input
+          id="unloader-input"
+          type="text"
+          placeholder="Enter your thoughts..."
+        />
+        <button id="unloader-submit">Decode</button>
+        <div id="unloader-output"></div>
+      </div>
 
-      <div id="chat-messages"></div>
-      <!-- ElevenLabs Convai Widget -->
-      <elevenlabs-convai
-       
-      ></elevenlabs-convai>
-      <script
-        src="https://unpkg.com/@elevenlabs/convai-widget-embed"
-        async
-        type="text/javascript"
-      ></script>
+      <!-- Planner Tool Panel -->
+      <div id="tool-planner" class="tool-panel" style="display: none">
+        <h2>Planner</h2>
+        <!-- Planner UI elements go here -->
+        <p>Planner tool coming soon!</p>
+      </div>
+
+      <!-- Checklist Tool Panel -->
+      <div id="tool-checklist" class="tool-panel" style="display: none">
+        <h2>Checklist</h2>
+              </div>
+
+        <p>Checklist tool coming soon!</p>
+      </div>
     </main>
-    <script src="script.js" defer></script>
+    <script src="chatbot.js"></script>
+    <script src="unloader.js"></script>
   </body>
 </html>

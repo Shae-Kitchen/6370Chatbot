@@ -139,3 +139,43 @@ function getSystemPrompt(userName, conversationGoal) {
       return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
   }
 }
+
+app.post("/api/unloader", async (req, res) => {
+  const { text, includeTime = false } = req.body;
+
+  if (!text || typeof text !== "string") {
+    return res.status(400).json({ error: "Invalid input" });
+  }
+
+  // Build the system prompt for sorting
+  let prompt = `Sort the following thoughts into four categories: "Do now", "Can wait", "Delegate", "Drop entirely".`;
+  if (includeTime) {
+    prompt += ` If possible, suggest a deadline or time estimate.`;
+  }
+  prompt += `\n\nThoughts:\n${text}\n\nReturn your answer as a JSON object with keys "do_now", "can_wait", "delegate", "drop_entirely". Each key should have an array of items. If you include time estimates, add them as a property for each item.`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: prompt }
+      ],
+      max_tokens: 512,
+      temperature: 0.3,
+    });
+
+    // Try to parse the response as JSON
+    let result;
+    try {
+      result = JSON.parse(response.choices[0].message.content);
+    } catch (err) {
+      // If parsing fails, just send the raw text
+      result = { raw: response.choices[0].message.content };
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error("OpenAI Decoder Error:", error);
+    res.status(500).json({ error: "Failed to decode thoughts" });
+  }
+});
