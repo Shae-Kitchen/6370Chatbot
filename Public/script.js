@@ -113,4 +113,3 @@ async function speak(text) {
     console.error("TTS error:", data.error);
   }
 }
-
