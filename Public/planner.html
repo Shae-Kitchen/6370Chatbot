@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Planner Tool</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="spacer-vertical-small"></div>
+      <div id="tool-nav" class="center">
+        <button data-tool="chat">Chatbot</button>
+        <button data-tool="decoder">Decoder</button>
+        <button data-tool="planner">Planner</button>
+        <button data-tool="checklist">Checklist</button>
+      </div>
+    </header>
+    <main>
+      <h2>Planner Tool</h2>
+      <p>Add tasks and drag them between lists!</p>
+      <input id="task-input" type="text" placeholder="New task..." />
+      <button onclick="addTask()">Add Task</button>
+      <div class="spacer-vertical-small"></div>
+      <div style="display: flex; gap: 2em">
+        <div ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h3>Inbox</h3>
+          <div
+            id="inbox-list"
+            style="min-height: 100px; border: 1px solid #ccc; padding: 10px"
+          ></div>
+        </div>
+        <div ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h3>Today</h3>
+          <div
+            id="today-list"
+            style="min-height: 100px; border: 1px solid #ccc; padding: 10px"
+          ></div>
+        </div>
+        <div ondrop="drop(event)" ondragover="allowDrop(event)">
+          <h3>Later</h3>
+          <div
+            id="later-list"
+            style="min-height: 100px; border: 1px solid #ccc; padding: 10px"
+          ></div>
+        </div>
+      </div>
+    </main>
+    <script src="Javascript/planner.js"></script>
+    <script src="Javascript/support.js"></script>
+  </body>
+</html>

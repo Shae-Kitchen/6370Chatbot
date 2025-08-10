@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (unloadBtn) unloadBtn.addEventListener("click", handleUnloader);
 });
 
+
+
 async function handleUnloader() {
   const input = document.getElementById("unloader-input").value.trim();
   const outputDiv = document.getElementById("unloader-output");
@@ -13,7 +15,7 @@ async function handleUnloader() {
     return;
   }
 
-  outputDiv.textContent = "🔄 Unjumbling...";
+  outputDiv.textContent = "Thank You for your patience...";
 
   try {
     const response = await fetch("http://localhost:5500/api/unloader", {

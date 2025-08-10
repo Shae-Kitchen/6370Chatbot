@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Decoder Tool</title>
+  <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <header>
+
+      <div class="spacer-vertical-small"></div>
+
+      <div id="tool-nav" class="center">
+        <button data-tool="chat">Chatbot</button>
+        <button data-tool="decoder">Decoder</button>
+        <button data-tool="planner">Planner</button>
+        <button data-tool="checklist">Checklist</button>
+      </div>
+    </header>
+
+    <main>
+        <h2>Decoder Tool</h2>
+    <p>Brain-dump your thoughts below and let the AI sort them!</p>
+    <textarea id="unloader-input" rows="6" placeholder="Type your thoughts here..."></textarea>
+    <br />
+    <button id="unloader-submit">Decode</button>
+    <div id="unloader-output"></div>
+    </main>
+<script src="Javascript/unloader.js"></script>
+   <script src="Javascript/support.js"></script>
+  </body>
+</html>
