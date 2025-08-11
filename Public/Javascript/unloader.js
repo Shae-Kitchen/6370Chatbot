@@ -3,8 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (unloadBtn) unloadBtn.addEventListener("click", handleUnloader);
 });
 
-
-
 async function handleUnloader() {
   const input = document.getElementById("unloader-input").value.trim();
   const outputDiv = document.getElementById("unloader-output");
@@ -25,19 +23,39 @@ async function handleUnloader() {
     });
 
     const data = await response.json();
-    outputDiv.textContent = "";
 
-    if (data.error) {
-      outputDiv.textContent = `⚠️ ${data.error}`;
+    let json;
+    if (typeof data.result === "string") {
+      try {
+        json = JSON.parse(data.result);
+      } catch (err) {
+        json = { raw: data.result };
+      }
     } else {
-      const json = JSON.parse(data.result); // Expecting stringified JSON
-      Object.entries(json).forEach(([category, items]) => {
+      json = data.result;
+    }
+
+    outputDiv.innerHTML = "";
+    // Display categories
+    ["do_now", "can_wait", "delegate", "drop_entirely"].forEach((category) => {
+      if (json[category] && json[category].length) {
         const section = document.createElement("div");
-        section.innerHTML = `<h3>${category}</h3><ul>${items
-          .map((item) => `<li>${item}</li>`)
+        section.innerHTML = `<h3>${category.replace(/_/g, " ")}</h3><ul>${json[
+          category
+        ]
+          .map(
+            (item) =>
+              `<li>${
+                typeof item === "string" ? item : JSON.stringify(item)
+              }</li>`
+          )
           .join("")}</ul>`;
         outputDiv.appendChild(section);
-      });
+      }
+    });
+
+    if (json.raw) {
+      outputDiv.innerHTML += `<pre>${json.raw}</pre>`;
     }
   } catch (err) {
     outputDiv.textContent = "⚠️ Something went wrong.";

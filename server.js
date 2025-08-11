@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -21,38 +20,68 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.use("/audio", express.static(path.join(__dirname, "audio")));
-app.use(cors()); // Allow frontend to talk to backend
-app.use(express.json()); // Parse JSON request bodies
+// ...all your API routes above...
+
+// --- Catch-all route for debugging ---
+app.all("*", (req, res) => {
+  console.log("Catch-all route hit:", req.method, req.url);
+  res.status(404).json({ error: "Not found" });
+});
+
+// --- Static file serving ---
 app.use(express.static(path.join(__dirname, "Public"))); // Serve static files from the "Public" folder
 
-// Chat route
+// --- Start server ---
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+});
+
+// --- Middleware ---
+app.use(cors()); // Allow frontend to talk to backend
+app.use(express.json()); // Parse JSON request bodies
+app.use("/audio", express.static(path.join(__dirname, "audio"))); // Serve audio files
+
+// --- Helper function ---
+function getSystemPrompt(userName, conversationGoal) {
+  switch (conversationGoal) {
+    case "tutoring":
+      return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
+    case "coaching":
+      return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
+    case "companionship":
+    default:
+      return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
+  }
+}
+
+// Chatbot route
 app.post("/api/chat", async (req, res) => {
-  // Destructure personalization data from request body
+  console.log("---- /api/chat ----");
+  console.log("Headers:", req.headers);
+  console.log("Raw req.body:", req.body);
+
+  if (!req.body || typeof req.body !== "object") {
+    console.log("ERROR: Request body missing or not JSON");
+    return res.status(400).json({ error: "Request body missing or not JSON" });
+  }
+
   const {
     message: userMessage,
     userName = "friend",
     conversationGoal = "companionship",
   } = req.body;
 
+  console.log("Parsed userMessage:", userMessage);
+  console.log("Parsed userName:", userName);
+  console.log("Parsed conversationGoal:", conversationGoal);
+
   if (!userMessage || typeof userMessage !== "string") {
+    console.log("ERROR: Invalid message format");
     return res.status(400).json({ error: "Invalid message format" });
   }
 
-  // Helper function to generate system prompt based on goal
-  function getSystemPrompt(userName, conversationGoal) {
-    switch (conversationGoal) {
-      case "tutoring":
-        return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
-      case "coaching":
-        return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
-      case "companionship":
-      default:
-        return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
-    }
-  }
-
   const systemPrompt = getSystemPrompt(userName, conversationGoal);
+  console.log("System prompt:", systemPrompt);
 
   try {
     const response = await openai.chat.completions.create({
@@ -64,6 +93,7 @@ app.post("/api/chat", async (req, res) => {
       max_tokens: 256,
     });
 
+    console.log("OpenAI response:", response.choices[0].message.content);
     res.json({ reply: response.choices[0].message.content.trim() });
   } catch (error) {
     console.error("OpenAI Error:", error);
@@ -73,13 +103,22 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+// Text-to-speech route
 app.post("/api/tts", async (req, res) => {
-  const { text } = req.body;
+  console.log("---- /api/tts ----");
+  console.log("Raw req.body:", req.body);
 
-  if (!text) return res.status(400).json({ error: "Text is required" });
+  const { text } = req.body;
+  console.log("Parsed text:", text);
+
+  if (!text) {
+    console.log("ERROR: Text is required");
+    return res.status(400).json({ error: "Text is required" });
+  }
 
   const filename = `${uuidv4()}.mp3`;
   const filepath = path.join(__dirname, "audio", filename);
+  console.log("Audio filename:", filename);
 
   try {
     const response = await axios({
@@ -105,6 +144,7 @@ app.post("/api/tts", async (req, res) => {
     response.data.pipe(writer);
 
     writer.on("finish", () => {
+      console.log("Audio file written:", filepath);
       res.json({ audioUrl: `/audio/${filename}` });
     });
 
@@ -118,25 +158,19 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-function getSystemPrompt(userName, conversationGoal) {
-  switch (conversationGoal) {
-    case "tutoring":
-      return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
-    case "coaching":
-      return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
-    case "companionship":
-    default:
-      return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
-  }
-}
-
+// Decoder (Unloader) route
 app.post("/api/unloader", async (req, res) => {
+  console.log("---- /api/unloader ----");
+  console.log("Raw req.body:", req.body);
+
   const { input } = req.body;
+  console.log("Parsed input:", input);
+
   if (!input || typeof input !== "string") {
+    console.log("ERROR: Invalid input");
     return res.status(400).json({ error: "Invalid input" });
   }
 
-  // This is the prompt that guides the AI
   const prompt = `
 Sort the following thoughts into four categories: "Do now", "Can wait", "Delegate", "Drop entirely".
 For each item, if possible, suggest a deadline or time estimate.
@@ -146,6 +180,7 @@ Each key should have an array of items. If you include time estimates, add them 
 Thoughts:
 ${input}
 `;
+  console.log("System prompt:", prompt);
 
   try {
     const response = await openai.chat.completions.create({
@@ -155,11 +190,15 @@ ${input}
       temperature: 0.3,
     });
 
+    console.log("OpenAI response:", response.choices[0].message.content);
+
     let result;
     try {
       result = JSON.parse(response.choices[0].message.content);
+      console.log("Parsed result:", result);
     } catch (err) {
       result = { raw: response.choices[0].message.content };
+      console.log("Raw result:", result);
     }
 
     res.json({ result });
@@ -168,50 +207,17 @@ ${input}
     res.status(500).json({ error: "Failed to decode thoughts" });
   }
 });
-//TRYING NEW FORMAT -- THIS IS OLD
-// app.post("/api/unloader", async (req, res) => {
-//   const { text, includeTime = false } = req.body;
 
-//   if (!text || typeof text !== "string") {
-//     return res.status(400).json({ error: "Invalid input" });
-//   }
-
-//   // Build the system prompt for sorting
-//   let prompt = `Sort the following thoughts into four categories: "Do now", "Can wait", "Delegate", "Drop entirely".`;
-//   if (includeTime) {
-//     prompt += ` If possible, suggest a deadline or time estimate.`;
-//   }
-//   prompt += `\n\nThoughts:\n${text}\n\nReturn your answer as a JSON object with keys "do_now", "can_wait", "delegate", "drop_entirely". Each key should have an array of items. If you include time estimates, add them as a property for each item.`;
-
-//   try {
-//     const response = await openai.chat.completions.create({
-//       model: "gpt-4o",
-//       messages: [
-//         { role: "system", content: prompt }
-//       ],
-//       max_tokens: 512,
-//       temperature: 0.3,
-//     });
-
-//     // Try to parse the response as JSON
-//     let result;
-//     try {
-//       result = JSON.parse(response.choices[0].message.content);
-//     } catch (err) {
-//       // If parsing fails, just send the raw text
-//       result = { raw: response.choices[0].message.content };
-//     }
-
-//     res.json(result);
-//   } catch (error) {
-//     console.error("OpenAI Decoder Error:", error);
-//     res.status(500).json({ error: "Failed to decode thoughts" });
-//   }
-// });
-
+// Brain dump analyzer route
 app.post("/api/analyze", async (req, res) => {
+  console.log("---- /api/analyze ----");
+  console.log("Raw req.body:", req.body);
+
   const { text } = req.body;
+  console.log("Parsed text:", text);
+
   if (!text || typeof text !== "string") {
+    console.log("ERROR: Invalid input");
     return res.status(400).json({ error: "Invalid input" });
   }
 
@@ -226,6 +232,7 @@ Return your answer as a JSON object with keys "keywords", "tasks", and "appointm
 Text:
 ${text}
 `;
+  console.log("System prompt:", prompt);
 
   try {
     const response = await openai.chat.completions.create({
@@ -235,11 +242,15 @@ ${text}
       temperature: 0.3,
     });
 
+    console.log("OpenAI response:", response.choices[0].message.content);
+
     let result;
     try {
       result = JSON.parse(response.choices[0].message.content);
+      console.log("Parsed result:", result);
     } catch (err) {
       result = { raw: response.choices[0].message.content };
+      console.log("Raw result:", result);
     }
 
     res.json(result);
@@ -249,7 +260,10 @@ ${text}
   }
 });
 
-// Start server
+// --- Static file serving ---
+app.use(express.static(path.join(__dirname, "Public"))); // Serve static files from the "Public" folder
+
+// --- Start server ---
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
