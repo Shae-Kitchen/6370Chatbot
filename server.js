@@ -20,34 +20,29 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ...all your API routes above...
-
-// --- Catch-all route for debugging ---
-app.all("*", (req, res) => {
-  console.log("Catch-all route hit:", req.method, req.url);
-  res.status(404).json({ error: "Not found" });
-});
-
-// --- Static file serving ---
-app.use(express.static(path.join(__dirname, "Public"))); // Serve static files from the "Public" folder
-
-// --- Start server ---
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-});
-
 // --- Middleware ---
 app.use(cors()); // Allow frontend to talk to backend
 app.use(express.json()); // Parse JSON request bodies
+app.options("/api/chat", cors());
+app.options("/api/tts", cors());
 app.use("/audio", express.static(path.join(__dirname, "audio"))); // Serve audio files
 
 // --- Helper function ---
 function getSystemPrompt(userName, conversationGoal) {
   switch (conversationGoal) {
     case "tutoring":
-      return `You are a patient and knowledgeable tutor helping ${userName} learn new concepts clearly and thoroughly.`;
+      return `You are a patient and knowledgeable tutor helping ${userName}. You are a patient and knowledgeable tutor who explains 
+      concepts step-by-step and encourages questions with the goal of helping ${userName} learn new concepts clearly and thoroughly.
+Focus on giving actionable advice and avoid generic statements or unrelated topics. Limit initial answers to 120 words, and end your response with a question or point that furthers discussion.
+
+"If you are unsure, say 'I'm not certain, but here's what I think.'"
+      `;
     case "coaching":
-      return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation.`;
+      return `You are an encouraging and insightful coach supporting ${userName} in personal growth and motivation. Use 
+      positive language to inspire and uplift ${userName}, while also providing constructive, practical feedback and guidance. Respond in short bursts, ideally not over 120 words.
+
+      If you are unsure, respond with 'You know I'm not sure, but we can figure it out together' and ask a follow-up question.`;
+
     case "companionship":
     default:
       return `You are a warm and friendly companion chatting with ${userName}, offering empathy and light-hearted conversation.`;
@@ -261,7 +256,14 @@ ${text}
 });
 
 // --- Static file serving ---
+
 app.use(express.static(path.join(__dirname, "Public"))); // Serve static files from the "Public" folder
+
+//--- Catch-all route for debugging ---
+app.use((req, res) => {
+  console.log("Catch-all route hit:", req.method, req.url);
+  res.status(404).json({ error: "Not found" });
+});
 
 // --- Start server ---
 app.listen(PORT, () => {
